@@ -21,7 +21,6 @@ uint8_t ledLen = sizeof(ledsArray) / sizeof(ledsArray[0]);
 uint32_t timestamp;
 uint32_t lastDebounceTime = 0;
 uint8_t currentLed = 0;
-uint8_t prevLed;
 uint32_t buttonCounter = 0;
 uint32_t prevButtonCounter = 0;
 
@@ -314,9 +313,6 @@ void choose_led_array() {
 
 void do_algorithm() {
   choose_led_array();
-  if (prevLed != 999) {
-    prevLed = currentLed;
-  } else prevLed = 0;
   digitalWrite(currentLedsArray[currentLed], HIGH);
   currentLed++;
   if (currentLed >= ledLen) {
