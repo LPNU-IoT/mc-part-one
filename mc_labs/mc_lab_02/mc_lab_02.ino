@@ -41,6 +41,7 @@ void setup() {
   DDRG |= 1 << 5;
 }
 
+
 void loop() {
   // read from port 0:
   if (Serial.available()) {

@@ -14,7 +14,6 @@
         "ms-vscode.vscode-serial-monitor",
         "phu1237.vs-browser",
         "vscode-icons-team.vscode-icons",
-        "espressif.esp-idf-extension",
         "wokwi.wokwi-vscode",
         "moozzyk.arduino",
         "vsciot-vscode.vscode-arduino",
@@ -23,13 +22,12 @@
         "aaron-bond.better-comments",
         "ms-vscode.cpptools-themes",
         "wayou.vscode-todo-highlight",
-        "gruntfuggly.todo-tree",
         "tomoki1207.pdf",
         "kisstkondoros.vscode-gutter-preview",
         "ritwickdey.liveserver",
         "adpyke.codesnap",
-        "maziac.hex-hover-converter",
         "parthr2031.colorful-comments",
-        "shahilkumar.docxreader"
+        "shahilkumar.docxreader",
+        "mateuszchudyk.hexinspector"
     ]
 }
