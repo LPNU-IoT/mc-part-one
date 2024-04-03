@@ -28,6 +28,8 @@ bool presentState;
 bool btnPressed = false;
 bool siteBtnPressed = false;
 bool msgAboutButtonSended = true;
+bool algo2Started = false;
+bool prevAlgo2State = false;
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
@@ -111,6 +113,8 @@ const char index_html[] PROGMEM = R"rawliteral(
     <!-- onmousedown / onmouseup - on PC/Laptop, ontouchend / ontouchstart - on mobile -->
     <button class="button" onmousedown="algorighm1('on_alg1');" ontouchstart="algorighm1('on_alg1');"
         onmouseup="algorighm1('off_alg1');" ontouchend="algorighm1('off_alg1');">Algorithm 1</button>
+    <button class="button" onclick="algorighm2('algo2');" >Algorithm 2</button>
+
     <div class="container">
         <div id="led3" class="leds"></div>
         <div id="led2" class="leds"></div>
@@ -183,6 +187,12 @@ const char index_html[] PROGMEM = R"rawliteral(
             xhr.open("GET", "/" + x, true);
             xhr.send();
         }
+
+        function algorighm2(x) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/" + x, true);
+            xhr.send();
+        }
     </script>
 </body>
 
@@ -248,6 +258,11 @@ void initWiFi()
   server.on("/status_led_3", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(200, "text/plain", String(digitalRead(LED3)).c_str()); });
 
+  server.on("/algo2", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
+    algo2Started = (!algo2Started) ? (true) : (false);
+    request->send(200, "text/plain", "ok"); });
+
   server.onNotFound(notFound);
   server.begin();
 }
@@ -274,15 +289,7 @@ void btnChange()
       lastDebounceTime = millis();
       prevButtonCounter = buttonCounter;
       presentState = digitalRead(btnGPIO);
-      if (presentState == LOW)
-      {
-        btnPressed = true;
-      }
-      else
-      {
-        btnPressed = false;
-      }
-
+      btnPressed = (presentState == LOW) ? true : false;
       if (buttonCounter > 10000)
       {
         prevButtonCounter = 0;
@@ -292,7 +299,7 @@ void btnChange()
   }
 }
 
-void chechSiteButton()
+void checkSiteButton()
 {
   if (siteBtnPressed)
   {
@@ -346,8 +353,28 @@ void do_algorithm()
 
 void loop()
 {
-  chechSiteButton();
+  if (Serial.available() > 0)
+  {
+    byte some = Serial.read();
+    Serial.println(some);
+    if (some == 0xA1)
+      btnPressed = true;
+    if (some == '\n')
+      btnPressed = false;
+  }
+
+  if (prevAlgo2State != algo2Started)
+  {
+    if (algo2Started)
+      Serial.write(0xC1);
+    else
+      Serial.write(0xD1);
+    prevAlgo2State = algo2Started;
+  }
+
+  checkSiteButton();
   btnChange();
+
   if (millis() - timestamp >= DELAY_BETWEEN_BUTTONS)
   {
     timestamp = millis();
