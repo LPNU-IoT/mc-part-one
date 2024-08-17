@@ -1,0 +1,13 @@
+name: "Get changed files list"
+description: "Setup Node with caching for dependencies"
+runs:
+  using: "composite"
+  steps:
+    - name: Get changed files list
+      id: get_changed_files
+      run: |
+        echo "Changed files:"
+        git diff --name-only ${{ github.event.pull_request.base.sha }} > changed_files.txt
+        cat changed_files.txt
+        echo "The list is saved to changed_files.txt"
+      shell: bash
