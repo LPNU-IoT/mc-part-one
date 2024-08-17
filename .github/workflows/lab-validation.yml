@@ -1,0 +1,114 @@
+name: Cheking of compile Arduino sketch for AVR/AtMega
+
+on:
+  pull_request:
+    branches: [main, master]
+
+env:
+  platform: "arduino:avr"
+  fqbn_master: "arduino:avr:mega"
+  COMMIT_COUNT: $(( ${{ github.event_name == 'pull_request' && github.event.pull_request.commits || 0 }} + 1 ))
+
+jobs:
+  handle_bad_branch_name:
+    runs-on: ubuntu-22.04
+    if: (contains(github.head_ref, 'mc_lab_1') || contains(github.head_ref, 'mc_lab_2') || contains(github.head_ref, 'mc_lab_3') || contains(github.head_ref, 'mc_lab_4') || contains(github.head_ref, 'mc_lab_5') || contains(github.head_ref, 'mc_lab_6') || contains(github.head_ref, 'mc_lab_7')) == false
+    steps:
+      - name: Fail the build
+        run: | 
+          echo "The branch name is not correct. It should contain 'mc_lab_' prefix"
+          exit 1
+  build_labs_1_to_4:
+    runs-on: ubuntu-22.04
+    if: contains(github.head_ref, 'mc_lab_1') || contains(github.head_ref, 'mc_lab_2') || contains(github.head_ref, 'mc_lab_3') || contains(github.head_ref, 'mc_lab_4')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: ${{ env.COMMIT_COUNT }}
+
+      - name: Get changed files list
+        uses: ./.github/actions/get_changed_files
+
+      - name: Set up Arduino CLI
+        uses: ./.github/actions/avr_setup
+
+      - name: Compile Sketch
+        run: arduino-cli compile --fqbn ${{ env.fqbn_master }} $(grep -E '\.ino$' changed_files.txt | xargs)
+  build_lab_5:
+    runs-on: ubuntu-22.04
+    if: contains(github.head_ref, 'mc_lab_5')
+    env:
+      fqbn_slave: "arduino:avr:nano"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: ${{ env.COMMIT_COUNT }}
+
+      - name: Get changed files list
+        uses: ./.github/actions/get_changed_files
+
+      - name: Get master folder
+        run: |
+          cat changed_files.txt | xargs dirname | grep 'master' | grep -m 1 -vE '/(.*master.*|.*slave.*)/'  > master_project.txt
+          echo "Master project:"
+          cat master_project.txt
+
+      - name: Get slave folders
+        run: |
+          cat changed_files.txt | xargs dirname | grep 'slave' | grep -vE '/(.*master.*|.*slave.*)/'  > slave_projects.txt
+          echo "Slave projects:"
+          cat slave_projects.txt
+
+      - name: Check if there is at least one master and one slave project
+        run: |
+          if [ ! -s master_project.txt ] || [ ! -s slave_projects.txt ]; then
+            echo "There is no master or slave project"
+            exit 1
+          fi
+
+      - name: Set up Arduino CLI
+        uses: ./.github/actions/avr_setup
+
+      - name: Compile master
+        run: while read master_folder; do arduino-cli compile --fqbn ${{ env.fqbn_master }} $master_folder/*.ino; done < master_project.txt
+
+      - name: Compile slaves
+        run: while read slave_folder; do arduino-cli compile --fqbn ${{ env.fqbn_slave }} $slave_folder/*.ino; done < slave_projects.txt
+  build_lab_6:
+    runs-on: ubuntu-22.04
+    if: contains(github.head_ref, 'mc_lab_6')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: ${{ env.COMMIT_COUNT }}
+
+      - name: It just passes
+        run: echo "It just passes. It's too complex"
+  build_lab_7:
+    runs-on: ubuntu-22.04
+    if: contains(github.head_ref, 'mc_lab_7')
+    env:
+      register-bindings: "m2560def.inc"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: ${{ env.COMMIT_COUNT }}
+
+      - name: Get changed files list
+        uses: ./.github/actions/get_changed_files
+
+      - name: Setup AVRA Assembler
+        run: |
+          git clone https://github.com/Ro5bert/avra.git
+          cd avra
+          sudo make install
+
+      - name: Preprocess sketch - append register bindings to the top of the file
+        run: printf ".include \"${{ env.register-bindings }}\"\n\n" | cat - $(grep -m 1 -E '\.(asm|S)$' changed_files.txt | xargs) > pipeline_main_assembly_source_file.asm
+
+      - name: Compile Sketch
+        run: avra pipeline_main_assembly_source_file.asm
