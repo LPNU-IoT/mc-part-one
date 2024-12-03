@@ -36,7 +36,7 @@
 
 #define MY_PORT PORTA
 #define BUTTON_PIN 21 //PD0
-#define TIMER_LEDS 1000
+#define TIMER_LEDS 400
 
 // #define PORT_PIN_0   (1 << 0) // 0b00000001 // B 0000 0001
 // #define PORT_PIN_1   (1 << 1) // 0b00000010 // B 0000 0010
@@ -132,7 +132,7 @@ void ledsHandler()
       MY_PORT ^= 1<<i; //bit flip
 
       //!!!!!! IN OTHER LAB VARIANTS NO INFINITE LOOP !!!!!!!!!!!!!!!
-      // btnPressedFlag = false
+      // btnPressedFlag = false;
     }
   }
   
