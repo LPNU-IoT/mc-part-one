@@ -34,7 +34,15 @@ jobs:
         uses: ./.github/actions/avr_setup
 
       - name: Compile Sketch
-        run: arduino-cli compile --fqbn ${{ env.fqbn_master }} $(grep -E '\.ino$' changed_files.txt | xargs)
+        run: arduino-cli compile --fqbn ${{ env.fqbn_master }} --output-dir build $(grep -E '\.ino$' changed_files.txt | tail -n 1 | xargs) 
+        # TODO: remove tail -n 1 
+        
+      - name: Uploud artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifact
+          path: build
+
   build_lab_5:
     runs-on: ubuntu-22.04
     if: contains(github.head_ref, 'mc_lab_5')
@@ -112,3 +120,55 @@ jobs:
 
       - name: Compile Sketch
         run: avra pipeline_main_assembly_source_file.asm
+
+
+  test_lab_1:
+    runs-on: ubuntu-22.04
+    needs: build_labs_1_to_4
+    if: contains(github.head_ref, 'mc_lab_1')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: ${{ env.COMMIT_COUNT }}
+      
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifact
+          path: mc_labs/mc_lab_01/build
+      
+      - name: Extract Variant Number
+        id: extract_variant
+        run: |
+          variant=
+          echo "variant='$(echo "${{ github.head_ref }}" | sed -n 's/.*v\([0-9]\+\).*/\1/p')'" >> "$GITHUB_OUTPUT"
+      
+      - name: Generate Test Scenario
+        id: generate_scenario
+        uses: OleksiuDatsko/get-lab-test-scenario-action@main
+        with:
+          lab_number: 1
+          variant_number: ${{ steps.extract_variant.outputs.variant }}
+          wokwi_toml_path: mc_labs/mc_lab_01/wokwi.toml
+          output: ${{ github.workspace }}/test_scenario.yml
+
+      - name: Run a Wokwi CI server
+        uses: wokwi/wokwi-ci-server-action@v1
+      
+      - name: Test on Wokwi
+        id: test
+        uses: wokwi/wokwi-ci-action@v1
+        continue-on-error: true
+        with:
+          token: ${{ secrets.WOKWI_CLI_TOKEN }}
+          path: mc_labs/mc_lab_01/
+          scenario: ${{ github.workspace }}/test_scenario.yml
+
+      - name: Rerun test on Wokwi
+        uses: wokwi/wokwi-ci-action@v1
+        if: steps.test.outcome == 'failure'
+        with:
+          token: ${{ secrets.WOKWI_CLI_TOKEN }}
+          path: mc_labs/mc_lab_01/
+          scenario: ${{ github.workspace }}/test_scenario.yml

@@ -1,5 +1,16 @@
 [wokwi]
 version = 1
-firmware = 'build/arduino.avr.mega/mc_lab_01.ino.hex' 
-elf = 'build/arduino.avr.mega/mc_lab_01.ino.elf'
+firmware = 'build/mc_lab_01.ino.hex' 
+elf = 'build/mc_lab_01.ino.elf'
 
+[lab_setup]
+serial_message = 'Port state:'
+btn1 = "btn1"
+P0 = "led8"
+P1 = "led6"
+P2 = "led7"
+P3 = "led1"
+P4 = "led5"
+P5 = "led4"
+P6 = "led3"
+P7 = "led2"

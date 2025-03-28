@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "author": "glorious _cycle",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-mega", "id": "mega", "top": -124.2, "left": 322.8, "attrs": {} },
+    { "type": "wokwi-lcd1602", "id": "lcd1", "top": -284.57, "left": 726.4, "attrs": {} },
+    {
+      "type": "wokwi-buzzer",
+      "id": "bz1",
+      "top": -218.4,
+      "left": 625.8,
+      "attrs": { "volume": "0.1" }
+    },
+    { "type": "wokwi-membrane-keypad", "id": "keypad1", "top": -69.2, "left": 725.6, "attrs": {} }
+  ],
+  "connections": [
+    [ "mega:22", "lcd1:RS", "green", [ "v-27.7", "h103.4" ] ],
+    [ "mega:23", "lcd1:RW", "green", [ "v-18.1", "h103" ] ],
+    [ "lcd1:E", "mega:24", "green", [ "v38.4", "h-96" ] ],
+    [ "lcd1:D4", "mega:26", "green", [ "v0" ] ],
+    [ "lcd1:D5", "mega:27", "green", [ "v0" ] ],
+    [ "lcd1:D6", "mega:28", "green", [ "v0" ] ],
+    [ "lcd1:D7", "mega:29", "green", [ "v0" ] ],
+    [ "bz1:2", "mega:21", "green", [ "v0" ] ],
+    [ "bz1:1", "mega:GND.1", "green", [ "v0", "h-211.2" ] ],
+    [ "keypad1:C4", "mega:A7", "green", [ "v19.2", "h-0.3" ] ],
+    [ "keypad1:C3", "mega:A6", "green", [ "v28.8", "h-0.15" ] ],
+    [ "keypad1:C2", "mega:A5", "green", [ "v38.4", "h-288" ] ],
+    [ "keypad1:C1", "mega:A4", "green", [ "v48", "h-288.1" ] ],
+    [ "keypad1:R4", "mega:A3", "green", [ "v57.6", "h-0.2" ] ],
+    [ "keypad1:R3", "mega:A2", "green", [ "v67.2", "h-288.3" ] ],
+    [ "keypad1:R2", "mega:A1", "green", [ "v76.8", "h-298" ] ],
+    [ "keypad1:R1", "mega:A0", "green", [ "v86.4", "h-288" ] ]
+  ],
+  "dependencies": {}
+}

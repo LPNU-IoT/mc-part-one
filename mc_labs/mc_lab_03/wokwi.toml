@@ -1,0 +1,4 @@
+[wokwi]
+version = 1
+firmware = 'build/mc_lab_01.ino.hex' 
+elf = 'build/mc_lab_01.ino.elf'
