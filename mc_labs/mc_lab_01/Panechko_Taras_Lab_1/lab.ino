@@ -11,7 +11,7 @@ const int buttonPin = 15; // Button on pin 15
 
 const int ledInterval = 500; // Time between LED changes
 const int debounceTime = 50; // Button debounce time
-const int doubleClickTime = 300; // Time for double click
+const int doubleClickTime = 300;
 
 int currentLedIndex = 0;
 bool reverseDirection = false;
