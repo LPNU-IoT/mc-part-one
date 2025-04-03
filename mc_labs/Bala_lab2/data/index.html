@@ -1,0 +1,195 @@
+<!DOCTYPE HTML>
+    <html>
+    
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            body {
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                font-family: Arial, sans-serif;
+                text-align: center;
+                margin: 0;
+                padding-top: 30px;
+            }
+
+            section {
+                display: flex;
+                justify-content: center;
+                gap: 1rem;
+            }
+    
+            .button {
+                padding: 12px 24px;
+                font-size: 20px;
+                text-align: center;
+                outline: none;
+                color: #fff;
+                background-color: #2f4468;
+                border: none;
+                border-radius: 8px;
+                box-shadow: 0 6px #999;
+                cursor: pointer;
+                transition: all 0.2s ease-in-out;
+                -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            }
+    
+            .button:hover {
+                background-color: #1f2e45;
+            }
+    
+            .button:active {
+                background-color: #1f2e45;
+                box-shadow: 0 4px #666;
+                transform: translateY(2px);
+            }
+
+            .leds {
+            width: 100px;
+            height: 100px;
+            margin: 20px;
+            display: inline-block;
+            border-radius: 50%;
+            }
+    
+            @media screen and (max-width: 480px) {
+                .button {
+                    padding: 12px 30px;
+                    font-size: 16px;
+                }
+    
+                h1 {
+                    font-size: 22px;
+                    padding-top: 10px;
+                }
+            }
+    
+            #delayValue {
+                margin-top: 15px;
+                font-size: 18px;
+                color: #333;
+            }
+
+            #led1 {
+                border: 5px solid #0f0;
+
+            }
+
+            #led2 {
+                border: 5px solid #ffff00;
+            }
+
+            #led3 {
+                border: 5px solid #f00;
+            }
+    
+        </style>
+    </head>
+    
+    <body>
+        <h1>ESP Pushbutton Web Server</h1>
+        <section>
+            <button class="button" onclick="changeDelay();">Change Delay</button>
+            <button class="button" onclick="sendCom();">UART</button>
+        </section>
+        
+        <p id="delayValue">Current Delay: 1000 ms</p>
+        <div class="container">
+            <div id="led1" class="leds"></div>
+            <div id="led2" class="leds"></div>
+            <div id="led3" class="leds"></div>
+        </div>
+    
+        <script>
+
+            var led1 = document.getElementById('led1');
+            var led2 = document.getElementById('led2');
+            var led3 = document.getElementById('led3');
+
+            function toggleCheckLed1(element) {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", "/status_led_1", true);
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        var status_led_1= xhr.responseText;
+                        console.log("Led1 status:", status_led_1);
+                        if (status_led_1 === '1') {
+                            led1.style.backgroundColor = '#0f0';
+                        } else {
+                            led1.style.backgroundColor = 'white';
+                        }
+                    }
+                };
+                xhr.send();
+            }
+
+            function toggleCheckLed2(element) {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", "/status_led_2", true);
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        var status_led_2 = xhr.responseText;
+                        console.log("Led2 status:", status_led_2);
+
+                        if (status_led_2 === '1') {
+                            led2.style.backgroundColor = '#ffff00';
+                        } else {
+                            led2.style.backgroundColor = 'white';
+                        }
+                    }
+                };
+                xhr.send();
+            }
+
+            function toggleCheckLed3(element) {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", "/status_led_3", true);
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        var status_led_3 = xhr.responseText;
+                        console.log("Led3 status:", status_led_3);
+                        if (status_led_3 === '1') {
+                            led3.style.backgroundColor = '#f00';
+                        } else {
+                            led3.style.backgroundColor = 'white';
+                        }
+                    }
+                };
+                xhr.send();
+            }
+
+
+            function changeDelay() {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", "/change_delay", true);
+                xhr.send();
+            }
+
+            function sendCom() {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", "/send_com", true);
+                xhr.send();
+            }
+    
+            function getDelayValue() {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", "/get_delay", true);
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        document.getElementById('delayValue').innerText = "Current Delay: " + xhr.responseText + " ms";
+                    }
+                };
+                xhr.send();
+            }
+            
+            setInterval(toggleCheckLed1, 30);
+            setInterval(toggleCheckLed2, 30);
+            setInterval(toggleCheckLed3, 30);
+            setInterval(getDelayValue, 30);
+        </script>
+    </body>
+    
+    </html>
