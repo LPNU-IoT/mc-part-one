@@ -13,8 +13,8 @@ int pauseState = LOW;
 int ledCount = 3;
 int timer = 15000;
 
-const char* ssid = "611VVA";
-const char* password = "123qwerty9";
+const char* ssid = "netis";
+const char* password = "password";
 
 ESP8266WebServer server(80);
 
