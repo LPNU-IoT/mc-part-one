@@ -1,0 +1,101 @@
+ <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>ESP32 LED Control</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    text-align: center;
+                    background-color: #f4f4f9;
+                }
+                h1 {
+                    color: #333;
+                }
+                button {
+                    background-color: #007BFF;
+                    color: white;
+                    border: none;
+                    padding: 15px 32px;
+                    margin: 10px;
+                    font-size: 16px;
+                    cursor: pointer;
+                    border-radius: 8px;
+                    transition: background-color 0.3s;
+                }
+                button:hover {
+                    background-color: #0056b3;
+                }
+                .led-container {
+                    display: flex;
+                    justify-content: center;
+                    gap: 10px;
+                    margin-top: 20px;
+                }
+                .led {
+                    width: 50px;
+                    height: 50px;
+                    background-color: gray;
+                    border-radius: 5px;
+                    display: inline-block;
+                    transition: background-color 0.3s;
+                }
+            </style>
+            <script>
+                const led1 = document.getElementById('led1');
+                const led2 = document.getElementById('led2');
+                const led3 = document.getElementById('led3');
+
+                let currentLED;
+
+                function ledLight(led) {
+                    led1.style.backgroundColor = 'gray';
+                    led2.style.backgroundColor = 'gray';
+                    led3.style.backgroundColor = 'gray';
+
+                    switch (led) {
+                        case 1:
+                            led1.style.backgroundColor = 'yellow';
+                            break;
+                        case 2:
+                            led2.style.backgroundColor = 'green';
+                            break;
+                        case 3:
+                            led3.style.backgroundColor = 'red';
+                            break;
+                    }
+                }
+
+                function sendCommand(command) {
+                    fetch('/' + command)
+                        .then(response => response.text())
+                        .then(data => console.log(data))
+                        .catch(error => console.error('Error:', error));
+                }
+
+                function updateLEDs() {
+                    fetch('/led_state')
+                        .then(response => response.text())
+                        .then(data => {
+                            currentLED = data;
+                            console.log(data);
+                        })
+                        .catch(error => console.error('Error:', error));
+                }
+
+                setInterval(updateLEDs, 100);
+            </script>
+        </head>
+        <body>
+            <h1>ESP32 LED Control</h1>
+            <button onclick="sendCommand('algo1')">Algorythm 1</button>
+            <button onclick="sendCommand('algo2')">Algorythm 2</button>
+
+            <div class="led-container">
+                <div id="led1" class="led"></div>
+                <div id="led2" class="led"></div>
+                <div id="led3" class="led"></div>
+            </div>
+        </body>
+        </html>
