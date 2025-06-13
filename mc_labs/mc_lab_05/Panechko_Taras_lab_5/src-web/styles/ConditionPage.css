@@ -1,0 +1,53 @@
+@import url("https://fonts.googleapis.com/css2?family=Bangers&family=Poppins:wght@400;600&family=Roboto+Slab&display=swap");
+
+
+.page-container {
+    padding: 2rem;
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #e6ffe6, #ffffff);
+}
+
+.page-container h1 {
+    text-align: center;
+    font-size: 2rem;
+    color: #166534;
+    margin-bottom: 1rem;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+@media (min-width: 768px) {
+    .cards-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.error {
+    color: #dc2626;
+    font-weight: bold;
+}
+
+.default-font {
+    font-family: sans-serif;
+}
+
+.cold-font {
+    font-family: "Courier New", monospace;
+}
+
+.cool-font {
+    font-family: "Roboto Slab", serif;
+}
+
+.warm-font {
+    font-family: "Poppins", sans-serif;
+}
+
+.hot-font {
+    font-family: "Bangers", cursive;
+}
